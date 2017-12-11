@@ -13,31 +13,31 @@ import 'Assembly-CSharp'
 --direita_cima 		= 7
 --parado 			= 8	
 
-direcao = nil
-
 function Start()
 
-	direcao = 0
+	jogador:Teste()
+	jogador.direcao = 1
+	jogador.range = 10
 	
 end
 
 function Update()
 
-	--if jogador:SensorDeInimigo() ~= nil then
-	--	inimigo = jogador:SensorDeInimigo()		
-	--	posicaoInimigo = inimigo:GetPos()
-	--end
-
-	if jogador:SensorDeParede() then
-		direcao = (direcao + 1) % 9
+	--[[if jogador:SensorDeParede() then
+		EsquivaParede()
 	end
 
-	Move(direcao)
+	if jogador:SensorDeInimigo() then
+		Debug.Log("Inimigo encontrado" .. jogador.target:GetPos().x)
+	end
 
+	jogador:Move(jogador.direcao)]]
 end
 
-function VerInimigo()
+function EsquivaParede()
+	jogador.direcao = (jogador.direcao + 1) % 9
+end
 
-	
+function PosToDir(position)
 
 end

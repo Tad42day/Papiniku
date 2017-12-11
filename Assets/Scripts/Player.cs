@@ -26,16 +26,20 @@ public class Player : MonoBehaviour {
     GameObject skull;
     [SerializeField]
     Direcao currentDirecao;
+    [HideInInspector]
+    public int direcao;
 
     Lua lua;
     string path;
     Rigidbody2D rb;
     bool frenteLivre;
     public bool atirou = false;
-    bool isDead = false;
+    public bool isDead = false;
     Transform firepoint;
     Color cor;
     Manager manager;
+
+    public Player target;
 
     void Start ()
     {
@@ -44,6 +48,7 @@ public class Player : MonoBehaviour {
         firepoint = transform.Find("Firepoint");
 
         currentDirecao = Direcao.direita;
+        direcao = (int)currentDirecao;
 
         CheckCor();
 
@@ -51,9 +56,13 @@ public class Player : MonoBehaviour {
         lua.LoadCLRPackage();
 
         lua["jogador"] = this;
-        lua["vida"] = 10;
-        lua.RegisterLuaClassType(typeof(Player), typeof(Player));
-        lua.RegisterFunction("Move", this, typeof(Player).GetMethod("Move"));
+        //lua["vida"] = 10;
+        //lua["direcao"] = direcao;
+        //lua["target"] = target;
+        //lua.RegisterLuaClassType(typeof(Player), typeof(Player));
+        //lua.RegisterLuaClassType(typeof(Vector2), typeof(Vector2));
+        //lua.RegisterFunction("Move", this, typeof(Player).GetMethod("Move"));
+        //lua.RegisterFunction("GetPos", this, typeof(Player).GetMethod("GetPos"));
 
         StartCoroutine(luaUpdate());
 
@@ -126,6 +135,11 @@ public class Player : MonoBehaviour {
         }
     }
 
+    public void Teste()
+    {
+        Debug.Log("Funcao de teste");
+    }
+
     #region Sensores
     public bool SensorDeParede()
     {
@@ -137,7 +151,7 @@ public class Player : MonoBehaviour {
         else
             return false; 
     }
-    public Player SensorDeInimigo()
+    public bool SensorDeInimigo()
     {
         //RaycastHit2D hit = Physics2D.CircleCast(transform.position, 2f,Vector2.zero);
         Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, range, layerPlayer);
@@ -155,11 +169,16 @@ public class Player : MonoBehaviour {
         {
             if(hit[0].gameObject != gameObject)
             {
-                return hit[0].gameObject.GetComponent<Player>();
+                target = hit[0].GetComponent<Player>();
+                return true;
             }
         }
+        else
+        {
+            target = null;
+        }
 
-        return null;
+        return false;
 
         //if(if hit debug)
         //if (hit)
@@ -233,9 +252,9 @@ public class Player : MonoBehaviour {
     #region Ações
     public void Move(int num)
     {
-        Debug.Log("Função Move");
         Direcao dir = (Direcao) num;
         currentDirecao = (Direcao) num;
+        direcao = num;
 
         if (dir == Direcao.cima)
         {
@@ -329,6 +348,29 @@ public class Player : MonoBehaviour {
         }
 
         GetComponent<SpriteRenderer>().color = cor;
+    }
+    public int GetDirecaoTo(Vector2 pos)
+    {
+        if (pos == Vector2.up)
+        {
+            return (int) Direcao.cima;
+        }
+        else if (pos == Vector2.down)
+        {
+            return (int)Direcao.baixo;
+        }
+        else if (pos == Vector2.left)
+        {
+            return (int)Direcao.esquerda;
+        }
+        else if (pos == Vector2.right)
+        {
+            return (int)Direcao.direita;
+        }
+        else
+        {
+            return (int) Direcao.parado;
+        }
     }
     public Vector2 GetPos()
     {
