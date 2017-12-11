@@ -279,6 +279,12 @@ public class Player : MonoBehaviour {
             firepoint.localPosition = new Vector2(-1, 1);
 
         }
+        else if (dir == Direcao.direita_cima)
+        {
+            rb.velocity = new Vector3(1, 1) * speed;
+            firepoint.localPosition = new Vector2(1, 1);
+
+        }
         else if (dir == Direcao.direita)
         {
             rb.velocity = new Vector3(1, 0 ) * speed;
