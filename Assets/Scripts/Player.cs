@@ -56,13 +56,6 @@ public class Player : MonoBehaviour {
         lua.LoadCLRPackage();
 
         lua["jogador"] = this;
-        //lua["vida"] = 10;
-        //lua["direcao"] = direcao;
-        //lua["target"] = target;
-        //lua.RegisterLuaClassType(typeof(Player), typeof(Player));
-        //lua.RegisterLuaClassType(typeof(Vector2), typeof(Vector2));
-        //lua.RegisterFunction("Move", this, typeof(Player).GetMethod("Move"));
-        //lua.RegisterFunction("GetPos", this, typeof(Player).GetMethod("GetPos"));
 
         StartCoroutine(luaUpdate());
 
@@ -153,26 +146,17 @@ public class Player : MonoBehaviour {
     }
     public bool SensorDeInimigo()
     {
-        //RaycastHit2D hit = Physics2D.CircleCast(transform.position, 2f,Vector2.zero);
         Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, range, layerPlayer);
 
-        //foreach (Collider2D c in hit)
-        //{
-        //    if (c.gameObject != gameObject)
-        //    {
-        //        return c.gameObject.GetComponent<Player>();
-        //    }
-        //}
-
         // Se existe pelo menos 1 inimigo no array
-        if(hit[0])
+        //if(hit[0])
+        //{
+        if(hit[0].gameObject != gameObject)
         {
-            if(hit[0].gameObject != gameObject)
-            {
-                target = hit[0].GetComponent<Player>();
-                return true;
-            }
+            target = hit[0].GetComponent<Player>();
+            return true;
         }
+        //}
         else
         {
             target = null;
@@ -351,26 +335,49 @@ public class Player : MonoBehaviour {
     }
     public int GetDirecaoTo(Vector2 pos)
     {
-        if (pos == Vector2.up)
-        {
-            return (int) Direcao.cima;
-        }
-        else if (pos == Vector2.down)
-        {
-            return (int)Direcao.baixo;
-        }
-        else if (pos == Vector2.left)
-        {
-            return (int)Direcao.esquerda;
-        }
-        else if (pos == Vector2.right)
+        Vector2 positionV2 = new Vector2(transform.position.x, transform.position.y);
+        Vector2 direction = pos - positionV2;
+        direction.Normalize();
+
+        Debug.DrawRay(positionV2, Vector2.right * 2f, cor);
+        Debug.DrawRay(positionV2, direction * 2f, cor);
+
+        float angulo = Vector2.SignedAngle(transform.right, direction);
+
+        if(angulo >= -30 && angulo <= 30)
         {
             return (int)Direcao.direita;
         }
-        else
+        else if(angulo >= 30 && angulo <= 60)
         {
-            return (int) Direcao.parado;
+            return (int)Direcao.direita_cima;
         }
+        else if (angulo >= 60 && angulo <= 120)
+        {
+            return (int)Direcao.cima;
+        }
+        else if (angulo >= 120 && angulo <= 150)
+        {
+            return (int)Direcao.esquerda_cima;
+        }
+        else if (angulo >= 150 || angulo <= -150)
+        {
+            return (int)Direcao.esquerda;
+        }
+        else if (angulo >= -150 && angulo <= -120)
+        {
+            return (int)Direcao.esquerda_baixo;
+        }
+        else if (angulo >= -120 && angulo <= -60)
+        {
+            return (int)Direcao.baixo;
+        }
+        else if (angulo >= -60 && angulo <= -30)
+        {
+            return (int)Direcao.direita_baixo;
+        }
+
+        return -1;
     }
     public Vector2 GetPos()
     {

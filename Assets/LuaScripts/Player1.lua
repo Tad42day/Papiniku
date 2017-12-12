@@ -29,9 +29,8 @@ Player target 	= Referencia ao inimigo proximo ao jogador
 function Start()
 
 	jogador:Teste()
-	jogador.direcao = 0
-	jogador.range = 3
-	jogador.pos
+	jogador.direcao = 1
+	jogador.range 	= 6
 	
 end
 
@@ -44,6 +43,7 @@ function Update()
 	if jogador:SensorDeInimigo() then
 		targetPos = jogador.target:GetPos()
 		targetDir = jogador:GetDirecaoTo(targetPos)
+		Debug.Log(jogador:GetDirecaoTo(targetPos))
 		jogador:Move(targetDir)
 	end
 
@@ -55,7 +55,6 @@ function EsquivaParede()
 end
 
 function PosToDir(pos)
-	if pos.x > 0 && pos.x < 1 then
-		Debug.Log("Teste")
-	end
+	angulo = Vector2:Angle(Vector2.right, Vector2.zero)
+	Debug.Log(angulo)
 end
